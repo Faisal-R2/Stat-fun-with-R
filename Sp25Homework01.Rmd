@@ -1,6 +1,6 @@
 ---
 title: "Homwork1 "
-author: "Homework01Gr6" #change to your group number
+author: "Homework01Gr#" #change to your group number
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
@@ -19,9 +19,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-
-
-
 ## Q1:
 
 The barista at ``t-test espresso'' is told that the optimal serving temperature for coffee is 180 F. Five temperatures are taken of the served coffee: 175, 185, 170, 184, and 175 degrees. 
@@ -29,7 +26,7 @@ The barista at ``t-test espresso'' is told that the optimal serving temperature 
 TASK: Find a 90% confidence interval of the form $(-\infty, b)$ for the mean temperature.(one side CI)
 
 DATA:
-```{r Q1_part1}
+```{r}
 temp <- c(175, 185, 170, 184, 175)
 n <- length(temp)
 alpha <- 0.1
@@ -40,330 +37,353 @@ s <- sd(temp)
 ## Part 1
 
 Since the number of samples is not large enough, we calculate the one-sided CI using $t$-distribution:
-Type the formula below
-$$\mu \pm t_{\alpha, n-1} \cdot \frac{s}{\sqrt{n}}$$
+Type the formula below : The Equation are : 
+
+$ CI_{Upper} = \bar{x} + t_{\alpha}_{df}\frac{s}{sqrt{n}}\$
+
+$ t_{\alpha}_{df} = \frac{\bar{x}-\mu}{\frac{s}{sqrt{n}}}\$
 
 ## Part2
 Compute one sided CI below
 
 The corresponding t score is:
-```{r Q1_part2}
+```{r}
 #type codes here
-# Given data
-temp <- c(175, 185, 170, 184, 175)
-n <- length(temp)
-alpha <- 0.1  # 90% confidence means alpha = 0.1 for one-sided
-x_bar <- mean(temp)
-s <- sd(temp)
-
-# Degrees of freedom
-df <- n - 1
-
-# Compute the critical t-score (one-sided)
-t_score <- qt(1 - alpha, df)
-
-# Calculate the one-sided confidence interval
-ci_upper <- x_bar + t_score * (s / sqrt(n))
-
-# Output the results
-cat("test score")
-t_score
-cat("one sided confidence interval")
-ci_upper
+t_score <- qt(1-alpha, n-1);t_score
+CI_Upper = x_bar + t_score*(s/sqrt(n));CI_Upper
 ```
 
 ## Part 3
 Alternatively, using t.test with alt="less" will give this type of one-sided confidence interval:
-```{r Q1_part3}
-# Given data
-temp <- c(175, 185, 170, 184, 175)
-
-# Perform the one-sided t-test with alternative = "less"
-t_test_result <- t.test(temp, alternative = "less", conf.level = 0.90)
-
-# Display the result
-t_test_result$conf.int
+```{r}
+t.test(temp,alternative = c("less"),conf.level = 0.90)
 ```
 
-
 ## After class activities (this part is HW2 from the past)
-Verzani BOOK,  Problem 3.16,  3.17,  3.31,   8.6,   8.8,   8.12,  8.19,
-Devore BOOK : section 7.2 problem 16; Sec 7.3: problem 32
+Verzani BOOK,  Problem 3.16,  3.17,  3.31,   8.6,   8.8,   8.12,  8.19: 
+
+##### Probelem : 3.16 :
+The data set twins (UsingR) contains IQ scores for pairs of identical twins who were separated at birth. Make a scatter plot of the variables Foster and
+Biological. Based on the scatter plot, predict what the Pearson correlation coefficient will be and whether the Pearson and Spearman coefficients will
+be similar. Check your guesses.
 
 ##Q2  Verzani Problem 3.16
 ```{r V3.16}
 #type codes here
-# Load the dataset (assuming the "UsingR" package is installed)
-library(UsingR)
+if (!require("UsingR")) 
+  install.packages("UsingR") 
 
-# Load the twins dataset
-data(twins)
 
-# Create a scatter plot
-plot(twins$Foster, twins$Biological, 
-     xlab = "Foster IQ", ylab = "Biological IQ", 
-     main = "Scatter Plot of Foster vs Biological IQ")
+data("twins")
+plot(twins$Foster, twins$Biological,
+     main = "Scatter Plot of Foster vs. Biological IQ Scores",
+     xlab = "Foster ",
+     ylab = "Biological ",
+     pch = 14, col = "red")
 
-# Calculate the Pearson correlation coefficient
 pearson_corr <- cor(twins$Foster, twins$Biological, method = "pearson")
-cat("Pearson correlation:", pearson_corr, "\n")
-
-# Calculate the Spearman correlation coefficient
+cat("Pearson Correlation Coefficient:", round(pearson_corr, 4), "\n")
 spearman_corr <- cor(twins$Foster, twins$Biological, method = "spearman")
-cat("Spearman correlation:", spearman_corr, "\n")
+cat("Spearman Correlation Coefficient:", round(spearman_corr, 4), "\n")
+
 ```
+### Probelm 3.17 : 
+The state.x77 data set contains various information for each of the fifty United States. We wish to explore possible relationships among the variables. First, we make the data set easier to work with by turning it into a data frame.
 ##Q3  Verzani Problem 3.17
 ```{r V3.17}
-# Convert the state.x77 data set into a data frame
-x77 <- data.frame(state.x77)
+#type codes here
+if (!require("HistData")) 
+  install.packages("HistData")
 
-# Create scatter plots for the specified pairs
-par(mfrow = c(2, 2))  # Arrange the plots in a 2x2 grid
+data("coins")
+state_data <- as.data.frame(state.x77)
 
-# Scatter plot of Population vs Frost
-plot(x77$Population, x77$Frost, 
-     xlab = "Population", ylab = "Frost", 
-     main = "Population vs Frost")
 
-# Scatter plot of Population vs Murder
-plot(x77$Population, x77$Murder, 
-     xlab = "Population", ylab = "Murder", 
-     main = "Population vs Murder")
+cat("Dataset Dimensions (Rows x Columns):", dim(state_data), "\n")
+cat("Column Names:", colnames(state_data), "\n")
+colnames(state_data) <- make.names(colnames(state_data))
 
-# Scatter plot of Population vs Area
-plot(x77$Population, x77$Area, 
-     xlab = "Population", ylab = "Area", 
-     main = "Population vs Area")
+column_lengths <- sapply(state_data, length)
+if (!all(column_lengths == 50)) {
+    stop("ERROR: Some columns do not have exactly 50 rows. Check dataset integrity!")
+}
 
-# Scatter plot of Income vs HS.Grad
-plot(x77$Income, x77$HS.Grad, 
-     xlab = "Income", ylab = "HS.Grad", 
-     main = "Income vs HS.Grad")
+plot(state_data$Frost, state_data$Population,
+     main = "Population vs. Frost",
+     xlab = "Frost (Avg Days Below Freezing)",
+     ylab = "Population",
+     pch = 16, col = "blue")
+
+plot(state_data$Population, state_data$Murder,
+     main = "Murder Rate vs. Population",
+     xlab = "Population",
+     ylab = "Murder Rate",
+     pch = 16, col = "red")
+
+plot(state_data$Area, state_data$Population,
+     main = "Population vs. Area",
+     xlab = "Area (sq miles)",
+     ylab = "Population",
+     pch = 16, col = "green")
+
+plot(state_data$HS.Grad, state_data$Income,  
+     main = "Income vs. High School Graduation Rate",
+     xlab = "High School Graduation Rate (%)",
+     ylab = "Income",
+     pch = 16, col = "purple")
+
 ```
-
-##Check linearity in the scatter plots??
-
+### Problem 4 : 
+3.31 The data set coins (UsingR) contains the number of coins in a change
+bin and the years they were minted. Do the following:
+1. How much money is in the change bin?
+2. Make a barplot of the years. Is there a trend?
+3. Use cut to construct a barplot by decade.
+4. Make a contingency table of the year and the value. Does it look like
+the two variables are associated? Why?
 
 ##Q4  Verzani Problem 3.31
 ```{r V3.31}
-# Load the UsingR package
+#type codes here
+if (!require("UsingR")) install.packages("UsingR")
+if (!require("HistData")) install.packages("HistData")
 library(UsingR)
-
-# Load the coins data set
-data(coins)
-
-# 1. How much money is in the change bin?
-# Assuming the 'coins' dataset contains a 'count' and 'value' columns:
-money_in_bin <- sum(coins$count * coins$value)
-cat("Total money in the change bin: $", money_in_bin, "\n")
-
-# 2. Make a barplot of the years. Is there a trend?
-barplot(table(coins$year), 
-        xlab = "Year", 
-        ylab = "Count of Coins", 
-        main = "Barplot of Coins by Year", 
-        col = "lightblue")
-
-# 3. Use cut to construct a barplot by decade
-# Create a new variable grouping years into decades
-
-decade_labels <- seq(from = floor(min(coins$year) / 10) * 10, 
-                     to = ceiling(max(coins$year) / 10) * 10 - 1, 
-                     by = 10)
-
-coins$decade <- cut(coins$year, 
-                    breaks = c(decade_labels, Inf),  # Inf is used to include the last decade
-                    labels = paste(decade_labels, "-", decade_labels + 9), 
-                    right = FALSE)
-
-# Create a barplot of coins by decade
-barplot(table(coins$decade), 
-        xlab = "Decade", 
-        ylab = "Count of Coins", 
-        main = "Barplot of Coins by Decade", 
-        col = "lightgreen")
-
-# 4. Make a contingency table of year and value
-contingency_table <- table(coins$year, coins$value)
-cat("Contingency table of Year and Value:\n")
-print(contingency_table)
-
-# Interpretation of the contingency table:
-cat ("Value of 0.01 is heavily concentrated near 1999, 2000,2001 and 2002")
-```
-
-##Q5  Verzani Problem 8.6
-```{r 8.6}
-# Given data
-n <- 100    # Total number of students surveyed
-x <- 5      # Number of left-handed students
-
-# Sample proportion
-p_hat <- x / n
-p_hat
-# Standard error of the sample proportion
-SE <- sqrt(p_hat * (1 - p_hat) / n)
-SE
-# Critical value for a 95% confidence interval
-z_alpha <- 1.96
-
-# Confidence interval calculation
-CI_lower <- p_hat - z_alpha * SE
-CI_upper <- p_hat + z_alpha * SE
-#Lower bound of confidence interval
-CI_lower
-#Upper bound of confidence interval
-CI_upper
-```
-
-##Q6 Verzani Problem 8.8
-```{r 8.8}
-# Given values
-z_alpha <- 1.96  # critical value for 95% confidence
-p_hat <- 0.54     # sample proportion
-margin_error <- 0.02  # margin of error
-
-# Sample size calculation
-n <- (z_alpha^2 * p_hat * (1 - p_hat)) / margin_error^2
-n
-
-```
-
-##Q7 Verzani Problem 8.12
-```{r 8.12}
-# Set parameters for the simulation
-M <- 50  # Number of simulations
-n <- 2   # Number of coin tosses per trial
-p <- 0.5 # True proportion
-alpha <- 0.05 # For 95% confidence interval
-
-# Critical value for a 95% confidence interval
-zstar <- qnorm(1 - alpha / 2)
-
-# Generate M random samples of size n with probability p (binomial distribution)
-phat <- rbinom(M, n, p) / n
-
-# Compute the standard error for each sample proportion
-SE <- sqrt(phat * (1 - phat) / n)
-
-# Compute the confidence intervals
-lower_bound <- phat - zstar * SE
-upper_bound <- phat + zstar * SE
-
-# Check how many of the confidence intervals contain the true proportion p = 0.5
-contained <- sum(lower_bound < p & p < upper_bound)
-
-# Calculate the percentage of intervals that contain p
-percentage_contained <- (contained / M) * 100
-
-# Output the result
-percentage_contained
-
-# Optional: Plot the confidence intervals
-matplot(rbind(lower_bound, upper_bound), 
-        rbind(1:M, 1:M), type = "l", lty = 1, 
-        xlab = "Confidence Interval", ylab = "Simulation Number")
-abline(v = p, col = "red")  # Vertical line indicating true proportion p = 0.5
-```
-
-##Q7 Verzani Problem 8.19
-```{r 8.19}
-# Load necessary libraries
 library(HistData)
 
-# Load the Macdonell dataset
-data(Macdonell)
+knitr::opts_chunk$set(echo = TRUE)
 
-# Expand the data based on frequency
+data("coins")
+head(coins)
+
+# part 1
+total_money <- sum(coins$value)
+cat("The Money change bin: $", total_money, "\n")
+
+# part 2
+barplot(table(coins$year),
+        main = "Frequency by Year",
+        xlab = "Year",
+        ylab = "Count",
+        col = "blue")
+
+# part 3
+coins$decade <- cut(coins$year, breaks = seq(1900, 2020, by = 10), right = FALSE)
+
+barplot(table(coins$decade),
+        main = "Coins by Decade",
+        xlab = "Decade",
+        ylab = "Count",
+        col = "red")
+
+# part 4
+contingency_table <- table(coins$year, coins$value)
+print(contingency_table)
+
+```
+
+### Problem 8.6: 
+A student wishes to find the proportion of left-handed people at her college. She surveys 100 fellow students and finds that only 5 are left-handed.
+If she computed a 95% confidence interval would it contain the value of p = 1/10? 
+
+## For solution we need blow Equations : 
+\[
+CI = \hat{p} \pm Z_{\alpha/2} \times \sqrt{\frac{\hat{p} (1 - \hat{p})}{n}}
+\]
+
+##Q5  Verzani Problem 8.6
+```{r V8.6}
+#type codes here
+x <- 5    
+n <- 100
+z_value= qnorm(0.975)  
+p_hat <- x / n
+CI <- c(p_hat - z_value * sqrt(p_hat * (1 - p_hat) / n), 
+        p_hat + z_value * sqrt(p_hat * (1 - p_hat) / n))
+
+cat("p_hat:", p_hat, "\n")
+cat("Z-value:", z_value, "\n")
+cat("95% CI: [", CI[1], ",", CI[2], "]\n")
+
+#  Check The conditions :  if p = 0.1 
+p_test <- 0.1  
+if (CI[1] <= p_test && p_test <= CI[2]) {
+  cat("The CI contains p = 0.1\n")
+} else {
+  cat("The CI does NOT contain p = 0.1\n")
+}
+
+
+```
+### Problem 8.8: 
+A New York Times article from October 9, 2003, contains this explanation  about an exit survey for a California recall election:
+In theory, in 19 cases out of 20, the results from such polls should differ by no more than plus or minus two percentage points from what would have been obtained by seeking to interview everyone who cast a ballot in the recall election.
+Assume a simple random sample and bp = .54. How big was n?.
+
+####For soltion we are using blow equation: 
+
+\[
+n = \left( \frac{Z \times \sqrt{\hat{p}(1 - \hat{p})}}{ME} \right)^2
+\]
+
+
+##Q6  Verzani Problem 8.8
+```{r V8.8}
+#type codes here
+ME = 0.02           
+p_hat = 0.54        
+z_value = 1.96      
+n = (z_value^2 * p_hat * (1 - p_hat)) / (ME^2)
+
+cat("Required sample size of (n):", ceiling(n), "\n")
+
+```
+##Q7  Verzani Problem 8.12
+The phrasing, “The true value, p, is in the confidence interval with 95% probability” requires some care. Either p is or isn’t in a given interval. What
+it means is that if we repeated the sampling, there is a 95% chance the true value is in the random interval. We can investigate this with a simulation.
+The commands below will find several confidence intervals at once.
+
+## We are going to used blow Equations: 
+
+\[
+CI = \hat{p} \pm Z \times \sqrt{\frac{\hat{p} (1 - \hat{p})}{n}}
+\]
+
+##Q7  Verzani Problem 8.12
+```{r V8.12}
+#type codes here: 
+M <- 50              
+n <- 2              
+p <- 0.5            
+alpha <- 0.05        
+
+zstar <- qnorm(1 - alpha / 2)
+phat <- rbinom(M, n, p) / n
+SE <- sqrt(phat * (1 - phat) / n)
+
+Lp <- phat - zstar * SE
+Up <- phat + zstar * SE
+
+RR <- ((sum(lower_bound < p & p < upper_bound))/M) *100
+
+cat("% CI - containing p:", RR, "%\n")
+matplot(rbind(Lp, Up), rbind(1:M, 1:M), type = "l", lty = 1,
+        xlab = "CI", ylab = "Simulation Number")
+
+abline(v = p, col = "blue", lwd = 2, lty = 2)  
+
+```
+## Problem 8.19 : 
+The t-distribution is also called the Student t-distribution. A Guinness Brewery employee, William Gosset, derived the distribution of T to handle
+small samples. (Large samples of beer presumably led to less publishable science.) As Guinness did not allow publication of research results at the
+time, Gosset chose to publish under the pseudonym Student. The journal chosen was Pearson’s journal, a colleague of Gosset and pioneer of statistics.
+Gosset applied his research to a data set containing height and leftmiddle- finger measurements of 3,000 criminals. These values were written
+on cards and randomly sorted into 750 samples, each containing four crimi8.2. CONFIDENCE INTERVALS FOR THE POPULATION MEAN 277 nals. (This is how simulations were done previously.) The data is available in the Macdonell (HistData) data set. Run a simulation using 750 samples of size 4. Use quantile to find a 95% confidence interval. Compare to that found with t.test for a single sample of size 4. As the data is tabulated, you’ll need to expand it:
+
+### Equations: 
+\[
+CI = \bar{x} \pm t_{\alpha/2, \, df} \times \left(\frac{s}{\sqrt{n}}\right)
+\]
+
+
+##Q8  Verzani Problem 8.19
+```{r V8.19}
+#type codes here
+require(HistData)
 finger <- with(Macdonell, rep(finger, frequency))
-head(finger)  # Preview the expanded data
+res <- replicate(750, mean(sample(finger, 4, replace = TRUE)))
+quantile(res, c(0.025, 0.975))
+cat("\n")  
 
-# Set the random seed for reproducibility
-set.seed(123)
-
-# Generate 750 samples of size 4
-samples <- replicate(750, sample(finger, size = 4, replace = TRUE))
-
-# Compute the sample means
-sample_means <- apply(samples, 2, mean)
-
-# Compute the 95% confidence interval using quantile
-CI_quantile <- quantile(sample_means, c(0.025, 0.975))
-CI_quantile
-
-# Select one sample of size 4
-single_sample <- sample(finger, size = 4)
-
-# Perform the t-test
-t_test_result <- t.test(single_sample)
-
-# Extract the confidence interval from the t-test result
-CI_t_test <- t_test_result$conf.int
-CI_t_test
+n <- 4
+x <- sample(finger, n, replace = TRUE)
+t.test(x, conf.level = 0.95)$conf.int
+cat("\n")  
 ```
+#######
 
-##Devore 7.2 prob 16
+Devore BOOK : section 7.2 problem 16; Sec 7.3: problem 32
+### Problem : 16.: 
+The alternating current (AC) breakdown voltage of an insulating liquid indicates its dielectric strength. The article “Testing Practices for the AC Breakdown Voltage Testing of Insulation Liquids” (IEEE Electrical Insulation Magazine, 1995: 21–26) gave the accompanying sample observations on breakdown voltage (kV) of a particular circuit under certain conditions.
 
-```{r 7.2_16}
-# Breakdown voltage data
-voltage <- c(62, 50, 53, 57, 41, 53, 55, 61, 59, 64, 50, 53, 64, 62, 50, 68, 
-             54, 55, 57, 50, 55, 50, 56, 55, 46, 55, 53, 54, 52, 47, 47, 55, 
-             57, 48, 63, 57, 57, 55, 53, 59, 53, 52, 50, 55, 60, 50, 56, 58)
-# Boxplot
-boxplot(voltage, main="Boxplot of Breakdown Voltage", ylab="Breakdown Voltage (kV)", col="lightblue")
+62 50 53 57 41 53 55 61 59 64 50 53 64 62 50 68
+54 55 57 50 55 50 56 55 46 55 53 54 52 47 47 55
+57 48 63 57 57 55 53 59 53 52 50 55 60 50 56 58 .
 
-# Sample statistics
-n <- length(voltage)
-x_bar <- mean(voltage)
-s <- sd(voltage)
+### Equation : 
+\[
+CI = \bar{x} \pm t_{\alpha/2} \times \left(\frac{s}{\sqrt{n}}\right)
+\]
 
-# Critical value for t-distribution with 95% confidence level
-t_alpha <- qt(0.975, df=n-1)
+##Q9  Devore BOOKProblem 3.16
+```{r V9}
+#type codes here
+### part A
+# breakdown voltage data
+voltage_data <- c(62, 50, 53, 57, 41, 53, 55, 61, 59, 64, 50, 53, 64, 62, 50, 68,
+                  54, 55, 57, 50, 55, 50, 56, 55, 46, 55, 53, 54, 52, 47, 47, 55,
+                  57, 48, 63, 57, 57, 55, 53, 59, 53, 52, 50, 55, 60, 50, 56, 58)
+summary(voltage_data)
 
-# Margin of error
-margin_error <- t_alpha * (s / sqrt(n))
+# part B
+boxplot(voltage_data, main = "plots Breakdown Voltage (kV)",
+        xlab = "Breakdown Voltage (kV)", col = "lightblue", horizontal = TRUE)
 
-# Confidence interval
-CI_lower <- x_bar - margin_error
-CI_upper <- x_bar + margin_error
+outliers <- boxplot.stats(voltage_data)$out
+cat("Potential Outliers:", outliers, "\n")
 
-CI_lower
-CI_upper
+# part B
+sample_mean <- mean(voltage_data)
+sample_sd <- sd(voltage_data)
+       
+n = 48                   
+t_value = 1.96          
 
-# Desired margin of error
-E <- 1  # 1 kV for margin of error
+SE = sd / sqrt(n)
+CI_lower = mean - t_value * SE
+CI_upper = mean + t_value * SE
 
-# Sample size calculation
-sample_size <- (t_alpha * s / E)^2
-sample_size
+cat("95% CI Breakdown Voltage: [", 
+    round(CI_lower, 1), ",", round(CI_upper, 1), "]\n")
+
+# Part D
+margin_error = 1       
+a_sd = 7.5               
+t_value = 1.96                
+
+required_n = (t_value * a_sd / margin_error)^2
+required_n = (required_n)  # Round up to nearest whole number
+
+cat("Required Sample Size for Desired Precision (E = 1 kV):", required_n, "\n")
 
 
 ```
+##### 32 
+According to the article “Fatigue Testing of Condoms” (Polymer Testing, 2009: 567–571), “tests currently used for condoms are surrogates for the challenges they face in use,” including a test for holes, an inflation test, a package seal test, and tests of dimensions and lubricant quality (all
+fertile territory for the use of statistical methodology!). The investigators developed a new test that adds cyclic strain to a level well below breakage and determines the number of cycles to break. A sample of 20 condoms of one particular type resulted in a sample mean number of 1584 and a
+sample standard deviation of 607. Calculate and interpret a confidence interval at the 99% confidence level for the true average number of cycles to break. [Note: The article presented the results of hypothesis tests based on the t distribution; the validity of these depends on assuming normal population distributions.
 
-##Devore 7.3 prob 32
-```{r 7.3_32}
-# Given data
-x_bar <- 1584    # Sample mean
-s <- 607         # Sample standard deviation
-n <- 20          # Sample size
+### Equation are used : 
+The t-distribution is used because the population standard deviation is unknown, and the sample size is small (\(n < 30\)).
+\[
+CI = \bar{x} \pm t_{\alpha/2} \times \left(\frac{s}{\sqrt{n}}\right)
+\]
+Where:
+The \( t_{\alpha/2} \) is the critical t-value for a 99% confidence level with df = n - 1 degrees of freedom. and  \( \frac{s}{\sqrt{n}} \) is the standard error of the mean.
 
-# Degrees of freedom
-df <- n - 1
+##Q10  Devore BOOK Problem 32
 
-# Critical t value for 99% confidence level
-t_alpha <- qt(0.995, df = df)
+```{r V32}
+#type codes here
+n = 20
+mean = 1584
+sd = 607
+con_level = 0.99
+alpha = 1 - con_level
+t_value <- qt(1 - alpha/2, df = n - 1)
+CI_l <- mean - t_value * (sd / sqrt(n))
+CI_u <- mean + t_value * (sd / sqrt(n))
 
-# Standard error of the mean
-SE <- s / sqrt(n)
-
-# Margin of error
-margin_error <- t_alpha * SE
-
-# Confidence interval
-CI_lower <- x_bar - margin_error
-CI_upper <- x_bar + margin_error
-
-CI_lower
-CI_upper
+cat("CI- Mean: [", 
+    round(CI_l, 1), ",", round(CI_u, 1), "]\n")
 
 ```
